@@ -1,0 +1,45 @@
+# /etc/systemd/system/khalaj.service
+#
+# نصب:
+#   sudo cp deploy/khalaj.service /etc/systemd/system/khalaj.service
+#   sudo nano /etc/systemd/system/khalaj.service      # مسیر پروژه و کاربر را اصلاح کنید
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now khalaj
+#   sudo systemctl status khalaj
+#   journalctl -u khalaj -f
+#
+# توجه: این فایل داخل پوشه پروژه نگه داشته می‌شود تا در گیت هم قابل نسخه‌بندی باشد
+# و به‌عنوان مرجع سرویس روی سرور استفاده شود.
+
+[Unit]
+Description=Pouya Khalaj — Brand Engineering (Next.js)
+Documentation=https://nextjs.org/docs
+After=network.target
+
+[Service]
+Type=simple
+# ▼ مسیر پروژه روی سرور را اصلاح کنید
+WorkingDirectory=/var/www/khalaj
+# ▼ کاربر لینوکسی که سایت با آن اجرا می‌شود
+User=www-data
+Group=www-data
+
+Environment=NODE_ENV=production
+Environment=PORT=3000
+# متغیرهای محیطی (در صورت نیاز):
+# EnvironmentFile=/var/www/khalaj/.env.local
+
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/khalaj.log
+StandardError=append:/var/log/khalaj.error.log
+
+# سخت‌گیری‌های امنیتی
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
